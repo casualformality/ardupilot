@@ -20,6 +20,7 @@
 #include "AP_Proximity_RangeFinder.h"
 #include "AP_Proximity_MAV.h"
 #include "AP_Proximity_SITL.h"
+#include "AP_Proximity_IR_I2C.h"
 
 extern const AP_HAL::HAL &hal;
 
@@ -304,6 +305,13 @@ void AP_Proximity::detect_instance(uint8_t instance)
     if (type == Proximity_Type_RangeFinder) {
         state[instance].instance = instance;
         drivers[instance] = new AP_Proximity_RangeFinder(*this, state[instance]);
+        return;
+    }
+    if (type == Proximity_Type_IR) {
+        drivers[instance] = AP_Proximity_IR_I2C::detect(*this, state[instance]);
+        if (drivers[instance] != nullptr) {
+            state[instance].instance = instance;
+        }
         return;
     }
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
