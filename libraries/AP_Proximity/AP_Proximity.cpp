@@ -15,6 +15,7 @@
 
 #include "AP_Proximity.h"
 #include "AP_Proximity_LightWareSF40C.h"
+#include "AP_Proximity_Scanse.h"
 #include "AP_Proximity_RPLidarA2.h"
 #include "AP_Proximity_TeraRangerTower.h"
 #include "AP_Proximity_RangeFinder.h"
@@ -31,7 +32,7 @@ const AP_Param::GroupInfo AP_Proximity::var_info[] = {
     // @Param: _TYPE
     // @DisplayName: Proximity type
     // @Description: What type of proximity sensor is connected
-    // @Values: 0:None,1:LightWareSF40C,2:MAVLink,3:TeraRangerTower,4:RangeFinder,5:RPLidarA2
+    // @Values: 0:None,1:LightWareSF40C,2:MAVLink,3:TeraRangerTower,4:RangeFinder,5:RPLidarA2,6:IR_Sensor,7:Scanse
     // @RebootRequired: True
     // @User: Standard
     AP_GROUPINFO("_TYPE",   1, AP_Proximity, _type[0], 0),
@@ -151,7 +152,7 @@ const AP_Param::GroupInfo AP_Proximity::var_info[] = {
     // @Param: 2_TYPE
     // @DisplayName: Second Proximity type
     // @Description: What type of proximity sensor is connected
-    // @Values: 0:None,1:LightWareSF40C,2:MAVLink,3:TeraRangerTower,4:RangeFinder,5:RPLidarA2
+    // @Values: 0:None,1:LightWareSF40C,2:MAVLink,3:TeraRangerTower,4:RangeFinder,5:RPLidarA2,6:IR_Sensor,7:Scanse
     // @User: Advanced
     // @RebootRequired: True
     AP_GROUPINFO("2_TYPE", 16, AP_Proximity, _type[1], 0),
@@ -313,6 +314,13 @@ void AP_Proximity::detect_instance(uint8_t instance)
             state[instance].instance = instance;
         }
         return;
+    }
+    if (type == Proximity_Type_SCANSE) {
+        if (AP_Proximity_Scanse::detect(serial_manager)) {
+            state[instance].instance = instance;
+            drivers[instance] = new AP_Proximity_Scanse(*this, state[instance], serial_manager);
+            return;
+        }
     }
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
     if (type == Proximity_Type_SITL) {

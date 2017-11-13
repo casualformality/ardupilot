@@ -25,7 +25,7 @@ AP_Proximity_Backend *AP_Proximity_IR_I2C::detect(AP_Proximity &_frontend,
 
     if (sensor->_dev->get_semaphore()->take(HAL_SEMAPHORE_BLOCK_FOREVER)) {
         sensor->update();
-	if (!sensor->get_last_status()) {
+        if (!sensor->get_last_status()) {
             sensor->_dev->get_semaphore()->give();
             delete sensor;
             return nullptr;
@@ -43,10 +43,13 @@ bool AP_Proximity_IR_I2C::initialise()
 {
     if (!_sector_initialised) {
         init_sectors();
-        return false;
+
+        // call update() at 20Hz
+        _dev->register_periodic_callback(50000,
+                                         FUNCTOR_BIND_MEMBER(&AP_Proximity_IR_I2C::update, void));
     }
 
-    return true;
+    return _sector_initialised;
 }
 
 // initialise sector angles using pre-defined ignore areas
@@ -79,29 +82,30 @@ void AP_Proximity_IR_I2C::update()
 
     _last_status = _dev->read_registers(SensorAddress_yaw_0, buffer, 6);
     if (_last_status) {
-        _distance[SensorAddress_yaw_0] = buffer[AP_IR_I2C_NORTH];
+        _distance[SensorAddress_yaw_0] = buffer[AP_IR_I2C_NORTH]/100.0f;
         _distance_valid[SensorAddress_yaw_0] = true;
         update_boundary_for_sector(SensorAddress_yaw_0);
 
-        _distance[SensorAddress_yaw_90] = buffer[AP_IR_I2C_EAST];
+        _distance[SensorAddress_yaw_90] = buffer[AP_IR_I2C_EAST]/100.0f;
         _distance_valid[SensorAddress_yaw_90] = true;
         update_boundary_for_sector(SensorAddress_yaw_90);
 
-        _distance[SensorAddress_yaw_180] = buffer[AP_IR_I2C_SOUTH];
+        _distance[SensorAddress_yaw_180] = buffer[AP_IR_I2C_SOUTH]/100.0f;
         _distance_valid[SensorAddress_yaw_180] = true;
         update_boundary_for_sector(SensorAddress_yaw_180);
 
-        _distance[SensorAddress_yaw_270] = buffer[AP_IR_I2C_WEST];
+        _distance[SensorAddress_yaw_270] = buffer[AP_IR_I2C_WEST]/100.0f;
         _distance_valid[SensorAddress_yaw_270] = true;
         update_boundary_for_sector(SensorAddress_yaw_270);
+    
+        set_status(AP_Proximity::Proximity_Good);
     } else {
         _distance_valid[AP_IR_I2C_NORTH] = false;
         _distance_valid[AP_IR_I2C_SOUTH] = false;
         _distance_valid[AP_IR_I2C_WEST] = false;
         _distance_valid[AP_IR_I2C_EAST] = false;
+        set_status(AP_Proximity::Proximity_NoData);
     }
-
-    set_status(AP_Proximity::Proximity_Good);
 }
     
 /* get distance upwards in meters. returns true on success

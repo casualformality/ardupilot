@@ -4,7 +4,7 @@
 #include "AP_Proximity.h"
 #include "AP_Proximity_Backend.h"
 
-#define AP_RANGE_FINDER_IR_I2C_DEFAULT_ADDR     0x53
+#define AP_RANGE_FINDER_IR_I2C_DEFAULT_ADDR     0x29
 #define AP_RANGE_FINDER_IR_I2C_MAX_DISTANCE     0.80f
 #define AP_RANGE_FINDER_IR_I2C_MIN_DISTANCE     0.20f
 

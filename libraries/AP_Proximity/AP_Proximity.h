@@ -45,6 +45,7 @@ public:
         Proximity_Type_RangeFinder = 4,
         Proximity_Type_RPLidarA2 = 5,
         Proximity_Type_IR      = 6,
+        Proximity_Type_SCANSE  = 7,
         Proximity_Type_SITL    = 10,
     };
 
