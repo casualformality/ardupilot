@@ -121,6 +121,7 @@ void Gazebo::recv_fdm(const struct sitl_input &input)
                         static_cast<float>(pkt.position_xyz[1]),
                         static_cast<float>(pkt.position_xyz[2]));
 
+    // send distance messages over mavlink
 
     // auto-adjust to simulation frame rate
     time_now_us += static_cast<uint64_t>(deltat * 1.0e6);

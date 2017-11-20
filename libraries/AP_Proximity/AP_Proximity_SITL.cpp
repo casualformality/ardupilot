@@ -34,6 +34,7 @@ AP_Proximity_SITL::AP_Proximity_SITL(AP_Proximity &_frontend,
 {
     sitl = (SITL::SITL *)AP_Param::find_object("SIM_");
     ap_var_type ptype;
+    // ADAM: add search for scanse here, and set the correct options
     fence_count = (AP_Int8 *)AP_Param::find("FENCE_TOTAL", &ptype);
     if (fence_count == nullptr || ptype != AP_PARAM_INT8) {
         AP_HAL::panic("Proximity_SITL: Failed to find FENCE_TOTAL");
