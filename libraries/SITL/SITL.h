@@ -66,6 +66,9 @@ public:
 
     // height above ground
     float height_agl;
+
+    // distance to object (proximity)
+    float distance[8];
     
     static const struct AP_Param::GroupInfo var_info[];
     static const struct AP_Param::GroupInfo var_info2[];
@@ -124,6 +127,8 @@ public:
     AP_Int8  pin_mask; // for GPIO emulation
     AP_Float speedup; // simulation speedup
     AP_Int8  odom_enable; // enable visual odomotry data
+    AP_Int8  prox_enable; // MAVLink proximity sensor data
+    AP_Float prox_max_range; // maximum proximity distance
     
     // wind control
     float wind_speed_active;

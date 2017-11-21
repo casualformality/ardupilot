@@ -140,6 +140,7 @@ protected:
     uint8_t rcin_chan_count = 0;
     float rcin[8];
     float range = -1.0f;            // rangefinder detection in m
+    double distance[8];             // proximity distance in m
 
     // Wind Turbulence simulated Data
     float turbulence_azimuth = 0.0f;

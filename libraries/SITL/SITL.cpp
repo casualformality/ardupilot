@@ -107,7 +107,8 @@ const AP_Param::GroupInfo SITL::var_info2[] = {
     AP_GROUPINFO("ARSPD_FAIL_P", 6, SITL,  arspd_fail_pressure, 0),
     AP_GROUPINFO("ARSPD_PITOT",  7, SITL,  arspd_fail_pitot_pressure, 0),
     AP_GROUPINFO("GPS_ALT_OFS",  8, SITL,  gps_alt_offset, 0),
-    AP_GROUPINFO("PROX_ENABLE",  9, SITL,  prox_enable, 0);
+    AP_GROUPINFO("PROX_ENABLE",  9, SITL,  prox_enable, 0),
+    AP_GROUPINFO("PROX_RANGE",  10, SITL,  prox_max_range, 200.0f),
     AP_GROUPEND
 };
     

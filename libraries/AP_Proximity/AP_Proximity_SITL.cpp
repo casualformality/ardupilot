@@ -34,7 +34,10 @@ AP_Proximity_SITL::AP_Proximity_SITL(AP_Proximity &_frontend,
 {
     sitl = (SITL::SITL *)AP_Param::find_object("SIM_");
     ap_var_type ptype;
-    // ADAM: add search for scanse here, and set the correct options
+
+    // ADAM: Remove this after testing
+    ::printf("Proximity is %senabled\n", (sitl->prox_enable ? "" : "not "));
+
     fence_count = (AP_Int8 *)AP_Param::find("FENCE_TOTAL", &ptype);
     if (fence_count == nullptr || ptype != AP_PARAM_INT8) {
         AP_HAL::panic("Proximity_SITL: Failed to find FENCE_TOTAL");
@@ -66,6 +69,14 @@ void AP_Proximity_SITL::update(void)
         if (last_sector >= _num_sectors) {
             last_sector = 0;
         }
+    } else if (sitl->prox_enable) {
+        for (unsigned i = 0; i < PROXIMITY_MAX_DIRECTION; i++)
+        {
+            _distance_valid[i] = true;
+            _distance[i] = sitl->distance[i];
+            update_boundary_for_sector(i);
+            set_status(AP_Proximity::Proximity_Good);
+        }
     } else {
         set_status(AP_Proximity::Proximity_NoData);        
     }
@@ -79,6 +90,13 @@ void AP_Proximity_SITL::load_fence(void)
     }
     last_load_ms = now;
     
+    if (sitl->prox_enable) {
+        for (unsigned i = 0; i < PROXIMITY_MAX_DIRECTION; i++) {
+            _sector_middle_deg[i] = 45*i;
+            _sector_width_deg[i] = 45;
+        }
+    }
+
     if (fence == nullptr) {
         fence = (Vector2l *)fence_loader.create_point_array(sizeof(Vector2l));
     }
@@ -123,7 +141,7 @@ bool AP_Proximity_SITL::get_distance_to_fence(float angle_deg, float &distance) 
 // get maximum and minimum distances (in meters) of primary sensor
 float AP_Proximity_SITL::distance_max() const
 {
-    return PROXIMITY_MAX_RANGE;
+    return sitl->prox_max_range;
 }
 float AP_Proximity_SITL::distance_min() const
 {
