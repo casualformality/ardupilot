@@ -37,6 +37,9 @@ AP_Proximity_SITL::AP_Proximity_SITL(AP_Proximity &_frontend,
 
     // ADAM: Remove this after testing
     ::printf("Proximity is %senabled\n", (sitl->prox_enable ? "" : "not "));
+    if (sitl->prox_enable) {
+        init_boundary();
+    }
 
     fence_count = (AP_Int8 *)AP_Param::find("FENCE_TOTAL", &ptype);
     if (fence_count == nullptr || ptype != AP_PARAM_INT8) {
@@ -55,7 +58,15 @@ void AP_Proximity_SITL::update(void)
     current_loc.lat = sitl->state.latitude * 1.0e7;
     current_loc.lng = sitl->state.longitude * 1.0e7;
     current_loc.alt = sitl->state.altitude * 1.0e2;
-    if (fence && fence_loader.boundary_valid(fence_count->get(), fence, true)) {
+    if (sitl->prox_enable) {
+        for (unsigned i = 0; i < PROXIMITY_MAX_DIRECTION; i++)
+        {
+            _distance_valid[i] = true;
+            _distance[i] = sitl->distance[i];
+            update_boundary_for_sector(i);
+        }
+        set_status(AP_Proximity::Proximity_Good);
+    } else if (fence && fence_loader.boundary_valid(fence_count->get(), fence, true)) {
         // update distance in one sector
         if (get_distance_to_fence(_sector_middle_deg[last_sector], _distance[last_sector])) {
             set_status(AP_Proximity::Proximity_Good);
@@ -68,14 +79,6 @@ void AP_Proximity_SITL::update(void)
         last_sector++;
         if (last_sector >= _num_sectors) {
             last_sector = 0;
-        }
-    } else if (sitl->prox_enable) {
-        for (unsigned i = 0; i < PROXIMITY_MAX_DIRECTION; i++)
-        {
-            _distance_valid[i] = true;
-            _distance[i] = sitl->distance[i];
-            update_boundary_for_sector(i);
-            set_status(AP_Proximity::Proximity_Good);
         }
     } else {
         set_status(AP_Proximity::Proximity_NoData);        
