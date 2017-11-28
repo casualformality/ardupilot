@@ -63,6 +63,8 @@ void AP_Proximity_SITL::update(void)
         {
             _distance_valid[i] = true;
             _distance[i] = sitl->distance[i];
+            _angle[i] = 45.0f * i;
+            _num_sectors = PROXIMITY_MAX_DIRECTION;
             update_boundary_for_sector(i);
         }
         set_status(AP_Proximity::Proximity_Good);
@@ -94,10 +96,7 @@ void AP_Proximity_SITL::load_fence(void)
     last_load_ms = now;
     
     if (sitl->prox_enable) {
-        for (unsigned i = 0; i < PROXIMITY_MAX_DIRECTION; i++) {
-            _sector_middle_deg[i] = 45*i;
-            _sector_width_deg[i] = 45;
-        }
+        return;
     }
 
     if (fence == nullptr) {
