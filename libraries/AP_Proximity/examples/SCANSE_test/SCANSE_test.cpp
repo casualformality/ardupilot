@@ -37,10 +37,6 @@ void setup()
             "3_PROTOCOL", 11.0);
     AP_Param::set_object_value(&serial_manager, serial_manager.var_info, 
             "3_BAUD", 115.0);
-    AP_Param::set_object_value(&serial_manager, serial_manager.var_info, 
-            "PRX_TYPE", 1.0);
-    AP_Param::set_object_value(&serial_manager, serial_manager.var_info, 
-            "PRX_ORIENT", 0.0);
 
 
     // Initialise sensor, delaying to make debug easier

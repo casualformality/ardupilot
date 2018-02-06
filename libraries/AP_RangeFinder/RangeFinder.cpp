@@ -28,6 +28,7 @@
 #include "AP_RangeFinder_uLanding.h"
 #include "AP_RangeFinder_TeraRangerI2C.h"
 #include "AP_RangeFinder_VL53L0X.h"
+#include "AP_RangeFinder_SharpI2C.h"
 #include <AP_BoardConfig/AP_BoardConfig.h>
 
 extern const AP_HAL::HAL &hal;
@@ -637,6 +638,9 @@ void RangeFinder::detect_instance(uint8_t instance)
             _add_backend(AP_RangeFinder_VL53L0X::detect(state[instance],
                                                         hal.i2c_mgr->get_device(0, 0x29)));
         }
+        break;
+    case RangeFinder_TYPE_SHARPI2C:
+        _add_backend(AP_RangeFinder_SharpI2C::detect(state[instance]));
         break;
 #if CONFIG_HAL_BOARD == HAL_BOARD_PX4  || CONFIG_HAL_BOARD == HAL_BOARD_VRBRAIN
     case RangeFinder_TYPE_PX4_PWM:

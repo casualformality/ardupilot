@@ -83,46 +83,46 @@
 //
 
 #ifndef RANGEFINDER_ENABLED
- # define RANGEFINDER_ENABLED ENABLED
+ #define RANGEFINDER_ENABLED ENABLED
 #endif
 
 #ifndef RANGEFINDER_HEALTH_MAX
- # define RANGEFINDER_HEALTH_MAX 3          // number of good reads that indicates a healthy rangefinder
+ #define RANGEFINDER_HEALTH_MAX 3          // number of good reads that indicates a healthy rangefinder
 #endif
 
 #ifndef RANGEFINDER_GAIN_DEFAULT
- # define RANGEFINDER_GAIN_DEFAULT 0.8f     // gain for controlling how quickly rangefinder range adjusts target altitude (lower means slower reaction)
+ #define RANGEFINDER_GAIN_DEFAULT 0.8f     // gain for controlling how quickly rangefinder range adjusts target altitude (lower means slower reaction)
 #endif
 
 #ifndef THR_SURFACE_TRACKING_VELZ_MAX
- # define THR_SURFACE_TRACKING_VELZ_MAX 150 // max vertical speed change while surface tracking with rangefinder
+ #define THR_SURFACE_TRACKING_VELZ_MAX 150 // max vertical speed change while surface tracking with rangefinder
 #endif
 
 #ifndef RANGEFINDER_TIMEOUT_MS
- # define RANGEFINDER_TIMEOUT_MS  1000      // desired rangefinder alt will reset to current rangefinder alt after this many milliseconds without a good rangefinder alt
+ #define RANGEFINDER_TIMEOUT_MS  1000      // desired rangefinder alt will reset to current rangefinder alt after this many milliseconds without a good rangefinder alt
 #endif
 
 #ifndef RANGEFINDER_WPNAV_FILT_HZ
- # define RANGEFINDER_WPNAV_FILT_HZ   0.25f // filter frequency for rangefinder altitude provided to waypoint navigation class
+ #define RANGEFINDER_WPNAV_FILT_HZ   0.25f // filter frequency for rangefinder altitude provided to waypoint navigation class
 #endif
 
 #ifndef RANGEFINDER_TILT_CORRECTION         // by disable tilt correction for use of range finder data by EKF
- # define RANGEFINDER_TILT_CORRECTION ENABLED
+ #define RANGEFINDER_TILT_CORRECTION ENABLED
 #endif
 
 #ifndef RANGEFINDER_GLITCH_ALT_CM
- # define RANGEFINDER_GLITCH_ALT_CM  200      // amount of rangefinder change to be considered a glitch
+ #define RANGEFINDER_GLITCH_ALT_CM  200      // amount of rangefinder change to be considered a glitch
 #endif
 
 #ifndef RANGEFINDER_GLITCH_NUM_SAMPLES
- # define RANGEFINDER_GLITCH_NUM_SAMPLES  3   // number of rangefinder glitches in a row to take new reading
+ #define RANGEFINDER_GLITCH_NUM_SAMPLES  3   // number of rangefinder glitches in a row to take new reading
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
 // Proximity sensor
 //
 #ifndef PROXIMITY_ENABLED
- # define PROXIMITY_ENABLED ENABLED
+ #define PROXIMITY_ENABLED ENABLED
 #endif
 
 #ifndef MAV_SYSTEM_ID
@@ -621,7 +621,7 @@
 #endif
 
 #ifndef AC_AVOID_ENABLED
- #define AC_AVOID_ENABLED   ENABLED
+ # define AC_AVOID_ENABLED   ENABLED
 #endif
 
 #if AC_AVOID_ENABLED && !PROXIMITY_ENABLED

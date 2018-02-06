@@ -116,10 +116,10 @@ private:
     bool _sector_initialised = false;
     // middle angle of each sector
     uint16_t _sector_middle_deg[PROXIMITY_SECTORS_MAX] = 
-            {   0,  30,  60,  90, 120, 150, 180, 210, 240, 270, 300, 330};
+            {   0,  45,  90, 135, 180, 225, 270, 315,   0,   0,   0,   0};
     // width (in degrees) of each sector
     uint8_t _sector_width_deg[PROXIMITY_SECTORS_MAX] = 
-            {  30,  30,  30,  30,  30,  30,  30,  30,  30,  30,  30,  30};
+            {  45,  45,  45,  45,  45,  45,  45,  45,   0,   0,   0,   0};
 
     // communication variables
     AP_HAL::UARTDriver *uart = nullptr;
