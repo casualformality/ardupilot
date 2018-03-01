@@ -17,9 +17,6 @@
 #include "AP_Proximity_Scanse.h"
 #include <AP_SerialManager/AP_SerialManager.h>
 #include <ctype.h>
-#include <stdio.h>
-
-#define DBG_LOG
 
 extern const AP_HAL::HAL& hal;
 
@@ -36,10 +33,7 @@ AP_Proximity_Scanse::AP_Proximity_Scanse(AP_Proximity &_frontend,
     uart = serial_manager.find_serial(AP_SerialManager::SerialProtocol_Lidar360, 0);
     if (uart != nullptr) {
         uart->begin(serial_manager.find_baudrate(AP_SerialManager::SerialProtocol_Lidar360, 0));
-        ::printf("Flow control: %d\n", uart->get_flow_control());
         uart->set_flow_control(AP_HAL::UARTDriver::FLOW_CONTROL_DISABLE);
-        ::printf("Flow control: %d\n", uart->get_flow_control());
-        ::printf("Baud rate: %d\n", serial_manager.find_baudrate(AP_SerialManager::SerialProtocol_Lidar360, 0));
     }
     _last_request_type = RequestType_None;
     _last_distance_received_ms = 0;
@@ -94,11 +88,21 @@ bool AP_Proximity_Scanse::initialise()
             reset_device();
         }
         return false;
-    } else if(_last_request_type == RequestType_Reset) {
-        // Check every 500ms for completion of reset
-        if (curTime - _last_request_ms > 500) {
+    } else if (curTime - _last_request_ms > 1000) {
+        // Check every second for command timeout
+        if (_last_request_type == RequestType_Reset) {
             get_motor_status();
             _last_request_type = RequestType_Reset;
+        } else if (_last_request_type == RequestType_MotorSpeed) {
+            set_motor_speed(true);
+        } else if (_last_request_type == RequestType_MotorReady) {
+            get_motor_status();
+        } else if (_last_request_type == RequestType_SampleRate) {
+            set_sample_rate();
+        } else if (_last_request_type == RequestType_Version) {
+            // Not implemented
+        } else if (_last_request_type == RequestType_DevInfo) {
+            // Not implemented
         }
     }
     // initialise sectors
@@ -173,9 +177,6 @@ void AP_Proximity_Scanse::init_sectors()
 // set speed of rotating motor
 void AP_Proximity_Scanse::set_motor_speed(bool on_off)
 {
-#ifdef DBG_LOG
-    ::printf("Setting motor speed\n");
-#endif
     // exit immediately if no uart
     if (uart == nullptr) {
         return;
@@ -209,9 +210,6 @@ void AP_Proximity_Scanse::get_motor_status()
 
 void AP_Proximity_Scanse::set_sample_rate()
 {
-#ifdef DBG_LOG
-    ::printf("Setting sample rate\n");
-#endif
     // exit immediately if no uart
     if (uart == nullptr) {
         return;
@@ -226,15 +224,12 @@ void AP_Proximity_Scanse::set_sample_rate()
 
 void AP_Proximity_Scanse::start_acquisition()
 {
-#ifdef DBG_LOG
-    ::printf("Starting acquisition\n");
-#endif
     // exit immediately if no uart
     if (uart == nullptr) {
         return;
     }
 
-    uart->write("DS\n");      // send request to sample at 500-600Hz
+    uart->write("DS\n");      // send request to start acquisition
 
     _last_request_type = RequestType_StartAcq;
     _last_request_ms = AP_HAL::millis();
@@ -242,15 +237,12 @@ void AP_Proximity_Scanse::start_acquisition()
 
 void AP_Proximity_Scanse::stop_acquisition()
 {
-#ifdef DBG_LOG
-    ::printf("Stopping acquisition\n");
-#endif
     // exit immediately if no uart
     if (uart == nullptr) {
         return;
     }
 
-    uart->write("DX\n");      // send request to sample at 500-600Hz
+    uart->write("DX\n");      // send request to stop acquisition
 
     _last_request_type = RequestType_StopAcq;
     _last_request_ms = AP_HAL::millis();
@@ -264,9 +256,6 @@ void AP_Proximity_Scanse::reset_device()
     }
 
     uart->write("RR\n");      // send request to reset the device
-#ifdef DBG_LOG
-    ::printf("Resetting device\n");
-#endif
 
     _motor_speed = 0;
     _last_request_type = RequestType_Reset;
@@ -350,7 +339,8 @@ bool AP_Proximity_Scanse::process_reply()
         {
             Rsp_Block *rsp = (Rsp_Block *) _buffer;
             uint16_t status = _bytes_to_uint16(rsp->status);
-            uint16_t speed = _bytes_to_uint16(rsp->rsp);
+            // We can verify the speed if we want
+            // uint16_t speed = _bytes_to_uint16(rsp->rsp);
             if (status == 0) {
                 // Wait until motor speed has stabilized
                 success = true;
@@ -390,7 +380,8 @@ bool AP_Proximity_Scanse::process_reply()
         {
             Rsp_Block *rsp = (Rsp_Block *) _buffer;
             uint16_t status = _bytes_to_uint16(rsp->status);
-            uint16_t speed = _bytes_to_uint16(rsp->rsp);
+            // We can verify the sample rate if we want
+            // uint16_t rate = _bytes_to_uint16(rsp->rsp);
             if (status == 0) {
                 // Move to next initialization stage
                 success = true;
@@ -407,17 +398,17 @@ bool AP_Proximity_Scanse::process_reply()
         
         case RequestType_Version:
         {
-            Device_Version *rsp = (Device_Version *) _buffer;
+            // Not implemented
+            // Device_Version *rsp = (Device_Version *) _buffer;
             success = true;
-            // TODO: Print device version here
             break;
         }
         
         case RequestType_DevInfo:
         {
-            Device_Info *rsp = (Device_Info *) _buffer;
+            // Not implemented
+            // Device_Info *rsp = (Device_Info *) _buffer;
             success = true;
-            // TODO: Print device info here
             break;
         }
         
